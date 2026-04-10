@@ -51,14 +51,18 @@ class AutoPloitEnv(EnvClient[AutoPloitAction, AutoPloitObservation, State]):
         return State(episode_id=payload.get("episode_id", ""), step_count=payload.get("step_count", 0))
 
 # ── Environment variables ─────────────────────────────────────────────────────
-API_BASE_URL     = os.environ.get("API_BASE_URL", "https://openrouter.ai/api/v1")
-MODEL_NAME       = os.environ.get("MODEL_NAME", "meta-llama/llama-3.3-8b-instruct:free")
-API_KEY          = os.environ.get("API_KEY", os.environ.get("HF_TOKEN", "sk-no-token"))
-LOCAL_IMAGE_NAME = os.environ.get("LOCAL_IMAGE_NAME")   # Docker image; if unset → use HF Space
-HF_REPO_ID       = os.environ.get("HF_REPO_ID", "shivarammore89/autoploit")
-ENV_URL          = os.environ.get("ENV_URL")
-TASK_ID          = os.getenv("TASK_ID",       "ctf_capture")
-MAX_STEPS        = int(os.environ.get("MAX_STEPS", "50"))
+# MANDATORY: These are injected by the hackathon environment.
+# Using os.environ[] directly as requested in the validator log to ensure we use their proxy.
+API_BASE_URL     = os.environ["API_BASE_URL"]
+API_KEY          = os.environ["API_KEY"]
+MODEL_NAME       = os.environ["MODEL_NAME"]
+
+# Optional or internal variables
+LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
+HF_REPO_ID       = os.getenv("HF_REPO_ID",   "shivarammore89/autoploit")
+ENV_URL          = os.getenv("ENV_URL")
+TASK_ID         = os.getenv("TASK_ID",       "all")
+MAX_STEPS        = int(os.getenv("MAX_STEPS", "50"))
 
 client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
 
