@@ -1,0 +1,13 @@
+spec_version: 1
+name: netpwn
+type: space
+runtime: fastapi
+app: server.app:app
+port: 8000
+tasks:
+  - id: network_recon
+    description: "EASY — Scan 192.168.1.0/24, discover all hosts and services within 15 steps"
+  - id: vulnerability_exploit
+    description: "MEDIUM — Exploit CVE vulnerabilities to gain system access (30 steps)"
+  - id: ctf_capture
+    description: "HARD — Full attack chain: recon → exploit → privilege escalation → flag capture (50 steps)"
