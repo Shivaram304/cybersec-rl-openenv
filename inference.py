@@ -51,16 +51,16 @@ class AutoPloitEnv(EnvClient[AutoPloitAction, AutoPloitObservation, State]):
         return State(episode_id=payload.get("episode_id", ""), step_count=payload.get("step_count", 0))
 
 # ── Environment variables ─────────────────────────────────────────────────────
-API_BASE_URL     = os.getenv("API_BASE_URL",  "https://openrouter.ai/api/v1")
-MODEL_NAME       = os.getenv("MODEL_NAME",    "meta-llama/llama-3.3-8b-instruct:free")
-HF_TOKEN         = os.getenv("API_KEY") or os.getenv("HF_TOKEN", "sk-no-token")
-LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")   # Docker image; if unset → use HF Space
-HF_REPO_ID       = os.getenv("HF_REPO_ID",   "shivarammore89/autoploit")
-ENV_URL          = os.getenv("ENV_URL")            # Direct remote URL (e.g. 'https://shivarammore89-autoploit.hf.space')
+API_BASE_URL     = os.environ.get("API_BASE_URL", "https://openrouter.ai/api/v1")
+MODEL_NAME       = os.environ.get("MODEL_NAME", "meta-llama/llama-3.3-8b-instruct:free")
+API_KEY          = os.environ.get("API_KEY", os.environ.get("HF_TOKEN", "sk-no-token"))
+LOCAL_IMAGE_NAME = os.environ.get("LOCAL_IMAGE_NAME")   # Docker image; if unset → use HF Space
+HF_REPO_ID       = os.environ.get("HF_REPO_ID", "shivarammore89/autoploit")
+ENV_URL          = os.environ.get("ENV_URL")
 TASK_ID          = os.getenv("TASK_ID",       "ctf_capture")
-MAX_STEPS        = int(os.getenv("MAX_STEPS", "50"))
+MAX_STEPS        = int(os.environ.get("MAX_STEPS", "50"))
 
-client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
+client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
 
 TOTAL_FLAGS = {"network_recon": 0, "vulnerability_exploit": 2, "ctf_capture": 3}
 
