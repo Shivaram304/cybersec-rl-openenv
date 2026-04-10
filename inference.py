@@ -121,22 +121,23 @@ async def run_episode(task_id: str) -> float:
 
     log_start(task=task_id, model=MODEL_NAME, env="autoploit")
 
-    # Connect: ENV_URL (remote), Docker (local eval), or HF Space via docker provider
-    if ENV_URL:
-        env = AutoPloitEnv(base_url=ENV_URL)
-        await env.connect()
-    elif LOCAL_IMAGE_NAME:
-        env = await AutoPloitEnv.from_docker_image(LOCAL_IMAGE_NAME)
-    else:
-        env = await AutoPloitEnv.from_env(HF_REPO_ID)
-
     rewards: List[float] = []
     history: List[str] = []
     steps_taken = 0
     flags = 0; ids = 0.0; disc_svc = 0; total_svc = 10; comp = 0
     success = False; score = 0.0
+    env = None
 
     try:
+        # Connect: ENV_URL (remote), Docker (local eval), or HF Space via docker provider
+        if ENV_URL:
+            env = AutoPloitEnv(base_url=ENV_URL)
+            await env.connect()
+        elif LOCAL_IMAGE_NAME:
+            env = await AutoPloitEnv.from_docker_image(LOCAL_IMAGE_NAME)
+        else:
+            env = await AutoPloitEnv.from_env(HF_REPO_ID)
+
         result = await env.reset()
         obs = result.observation
 
