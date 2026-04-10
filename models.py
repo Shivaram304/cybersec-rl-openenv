@@ -1,5 +1,5 @@
 """
-NetPwn — Penetration Testing RL Environment
+AutoPloit — Penetration Testing RL Environment
 Models using the correct OpenEnv Pydantic API.
 
 Meta × PyTorch OpenEnv Hackathon
@@ -9,9 +9,9 @@ from pydantic import Field
 from openenv.core.env_server.types import Action, Observation
 
 
-class NetPwnAction(Action):
+class AutoPloitAction(Action):
     """
-    Agent action in the NetPwn penetration testing environment.
+    Agent action in the AutoPloit penetration testing environment.
 
     action_type: "scan" | "exploit" | "brute_force" | "escalate" | "exfiltrate"
     target_ip:   Target host IP address (192.168.1.1 – 192.168.1.7)
@@ -24,7 +24,7 @@ class NetPwnAction(Action):
     technique:   str = Field(default="",              description="CVE exploit technique (required for exploit action)")
 
 
-class NetPwnObservation(Observation):
+class AutoPloitObservation(Observation):
     """
     Observation returned after each environment step.
 

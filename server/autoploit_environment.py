@@ -1,5 +1,5 @@
 """
-NetPwn Environment — OpenEnv implementation.
+AutoPloit Environment — OpenEnv implementation.
 Uses the correct openenv.core.env_server API.
 """
 import random
@@ -9,16 +9,16 @@ from openenv.core.env_server.interfaces import Environment
 from openenv.core.env_server.types import State
 
 try:
-    from ..models import NetPwnAction, NetPwnObservation
+    from ..models import AutoPloitAction, AutoPloitObservation
     from .network_simulator import NetworkSim, MAX_STEPS, TOTAL_FLAGS
 except ImportError:
-    from models import NetPwnAction, NetPwnObservation
+    from models import AutoPloitAction, AutoPloitObservation
     from server.network_simulator import NetworkSim, MAX_STEPS, TOTAL_FLAGS
 
 
-class NetPwnEnvironment(Environment):
+class AutoPloitEnvironment(Environment):
     """
-    NetPwn: A penetration testing RL environment.
+    AutoPloit: A penetration testing RL environment.
 
     Three tasks with increasing difficulty:
       network_recon       (Easy)   — Discover all hosts and services
@@ -38,12 +38,12 @@ class NetPwnEnvironment(Environment):
         self._max_steps = MAX_STEPS[task_id]
         self._total_flags = TOTAL_FLAGS[task_id]
 
-    def reset(self) -> NetPwnObservation:
+    def reset(self) -> AutoPloitObservation:
         seed = random.randint(0, 99_999)
         self._net = NetworkSim(task_id=self.task_id, seed=seed)
         self._state = State(episode_id=str(uuid4()), step_count=0)
 
-        return NetPwnObservation(
+        return AutoPloitObservation(
             known_hosts=[{"ip": ip, "status": "unknown"} for ip in self._net.hosts],
             current_pos="external",
             ids_alert=0.0,
@@ -58,7 +58,7 @@ class NetPwnEnvironment(Environment):
             reward=0.0,
         )
 
-    def step(self, action: NetPwnAction) -> NetPwnObservation:  # type: ignore[override]
+    def step(self, action: AutoPloitAction) -> AutoPloitObservation:  # type: ignore[override]
         self._state.step_count += 1
         msg, reward = self._dispatch(action)
 
@@ -84,7 +84,7 @@ class NetPwnEnvironment(Environment):
             f"Compromised: {len(self._net.compromised)}/{len(self._net.hosts)}."
         )
 
-        return NetPwnObservation(
+        return AutoPloitObservation(
             known_hosts=self._net.all_views(),
             current_pos=action.target_ip,
             ids_alert=round(self._net.ids_level, 3),
@@ -108,7 +108,7 @@ class NetPwnEnvironment(Environment):
 
     # ── Action dispatcher ────────────────────────────────────────────────────
 
-    def _dispatch(self, action: NetPwnAction):
+    def _dispatch(self, action: AutoPloitAction):
         t = action.action_type.lower().strip()
         ip = action.target_ip
         if t == "scan":        return self._net.scan(ip)

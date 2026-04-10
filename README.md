@@ -1,5 +1,5 @@
 ---
-title: NetPwn OpenEnv
+title: AutoPloit OpenEnv
 emoji: 🛡️
 colorFrom: green
 colorTo: blue
@@ -9,15 +9,15 @@ license: mit
 short_description: Penetration Testing RL Environment for OpenEnv
 ---
 
-# 🛡️ NetPwn — Penetration Testing RL Environment
+# 🛡️ AutoPloit — Penetration Testing RL Environment
 
 **Meta × PyTorch OpenEnv Hackathon Submission**
 
-NetPwn is a real-world cybersecurity Reinforcement Learning environment built strictly according to the OpenEnv framework. It trains AI agents to act as ethical penetration testers against a simulated corporate network (`192.168.1.0/24`). 
+AutoPloit is a real-world cybersecurity Reinforcement Learning environment built strictly according to the OpenEnv framework. It trains AI agents to act as ethical penetration testers against a simulated corporate network (`192.168.1.0/24`). 
 
-Unlike simple games or toy environments, NetPwn requires the agent to understand network topologies, identify unpatched real-world CVEs, escalate privileges, maintain stealth against Intrusion Detection Systems (IDS), and exfiltrate flags.
+Unlike simple games or toy environments, AutoPloit requires the agent to understand network topologies, identify unpatched real-world CVEs, escalate privileges, maintain stealth against Intrusion Detection Systems (IDS), and exfiltrate flags.
 
-🔗 **[GitHub Repository](https://github.com/Shivaram304/cybersec-rl-openenv)** | 🔗 **[Hugging Face Space](https://huggingface.co/spaces/shivarammore89/netpwn)**
+🔗 **[GitHub Repository](https://github.com/Shivaram304/cybersec-rl-openenv)** | 🔗 **[Hugging Face Space](https://huggingface.co/spaces/shivarammore89/autoploit)**
 
 ---
 

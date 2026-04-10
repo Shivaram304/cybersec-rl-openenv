@@ -1,19 +1,19 @@
-"""FastAPI app for NetPwn environment."""
+"""FastAPI app for AutoPloit environment."""
 
 from openenv.core.env_server.http_server import create_app
 
 try:
-    from ..models import NetPwnAction, NetPwnObservation
-    from .netpwn_environment import NetPwnEnvironment
+    from ..models import AutoPloitAction, AutoPloitObservation
+    from .autoploit_environment import AutoPloitEnvironment
 except ImportError:
-    from models import NetPwnAction, NetPwnObservation
-    from server.netpwn_environment import NetPwnEnvironment
+    from models import AutoPloitAction, AutoPloitObservation
+    from server.autoploit_environment import AutoPloitEnvironment
 
 app = create_app(
-    NetPwnEnvironment,
-    NetPwnAction,
-    NetPwnObservation,
-    env_name="netpwn",
+    AutoPloitEnvironment,
+    AutoPloitAction,
+    AutoPloitObservation,
+    env_name="autoploit",
     max_concurrent_envs=10,
 )
 

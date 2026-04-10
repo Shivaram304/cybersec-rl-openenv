@@ -1,5 +1,5 @@
 """
-inference.py — NetPwn Baseline Agent
+inference.py — AutoPloit Baseline Agent
 =====================================
 Pre-submission checklist compliance:
   ✅ Named inference.py in project root
@@ -20,8 +20,8 @@ API_BASE_URL     = os.getenv("API_BASE_URL",  "https://openrouter.ai/api/v1")
 MODEL_NAME       = os.getenv("MODEL_NAME",    "meta-llama/llama-3.3-8b-instruct:free")
 HF_TOKEN         = os.getenv("HF_TOKEN")           # NO default — required for LLM calls
 LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")   # Docker image; if unset → use HF Space
-HF_REPO_ID       = os.getenv("HF_REPO_ID",   "shivarammore89/netpwn")
-ENV_URL          = os.getenv("ENV_URL")            # Direct remote URL (e.g. 'https://shivarammore89-netpwn.hf.space')
+HF_REPO_ID       = os.getenv("HF_REPO_ID",   "shivarammore89/autoploit")
+ENV_URL          = os.getenv("ENV_URL")            # Direct remote URL (e.g. 'https://shivarammore89-autoploit.hf.space')
 TASK_ID          = os.getenv("TASK_ID",       "ctf_capture")
 MAX_STEPS        = int(os.getenv("MAX_STEPS", "50"))
 
@@ -112,19 +112,19 @@ def _heuristic(obs: dict, step: int) -> dict:
 # ── Episode ────────────────────────────────────────────────────────────────────
 async def run_episode(task_id: str) -> float:
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    from netpwn.client import NetPwnEnv
-    from netpwn.models import NetPwnAction
+    from autoploit.client import AutoPloitEnv
+    from autoploit.models import AutoPloitAction
 
-    log_start(task=task_id, model=MODEL_NAME, env="netpwn")
+    log_start(task=task_id, model=MODEL_NAME, env="autoploit")
 
     # Connect: ENV_URL (remote), Docker (local eval), or HF Space via docker provider
     if ENV_URL:
-        env = NetPwnEnv(base_url=ENV_URL)
+        env = AutoPloitEnv(base_url=ENV_URL)
         await env.connect()
     elif LOCAL_IMAGE_NAME:
-        env = await NetPwnEnv.from_docker_image(LOCAL_IMAGE_NAME)
+        env = await AutoPloitEnv.from_docker_image(LOCAL_IMAGE_NAME)
     else:
-        env = await NetPwnEnv.from_env(HF_REPO_ID)
+        env = await AutoPloitEnv.from_env(HF_REPO_ID)
 
     rewards: List[float] = []
     history: List[str] = []
@@ -141,7 +141,7 @@ async def run_episode(task_id: str) -> float:
 
             obs_dict = obs.model_dump() if hasattr(obs, "model_dump") else {}
             action_dict = get_action(obs_dict, history, step)
-            action = NetPwnAction(
+            action = AutoPloitAction(
                 action_type=action_dict.get("action_type","scan"),
                 target_ip=action_dict.get("target_ip","192.168.1.1"),
                 technique=action_dict.get("technique",""),

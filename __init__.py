@@ -1,10 +1,10 @@
-"""NetPwn — Penetration Testing RL Environment."""
+"""AutoPloit — Penetration Testing RL Environment."""
 
-from .client import NetPwnEnv
-from .models import NetPwnAction, NetPwnObservation
+from .client import AutoPloitEnv
+from .models import AutoPloitAction, AutoPloitObservation
 
 __all__ = [
-    "NetPwnAction",
-    "NetPwnObservation",
-    "NetPwnEnv",
+    "AutoPloitAction",
+    "AutoPloitObservation",
+    "AutoPloitEnv",
 ]

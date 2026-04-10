@@ -1,5 +1,5 @@
-"""NetPwn environment server components."""
+"""AutoPloit environment server components."""
 
-from .netpwn_environment import NetPwnEnvironment
+from .autoploit_environment import AutoPloitEnvironment
 
-__all__ = ["NetPwnEnvironment"]
+__all__ = ["AutoPloitEnvironment"]

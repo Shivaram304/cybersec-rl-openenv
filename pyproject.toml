@@ -9,9 +9,9 @@ requires = ["setuptools>=45", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "openenv-netpwn"
+name = "openenv-autoploit"
 version = "0.1.0"
-description = "Netpwn environment for OpenEnv"
+description = "Autoploit environment for OpenEnv"
 requires-python = ">=3.10"
 dependencies = [
     # Core OpenEnv runtime (provides FastAPI server + HTTP client types)
@@ -36,10 +36,10 @@ dev = [
 
 [project.scripts]
 # Server entry point - enables running via: uv run --project . server
-# or: python -m netpwn.server.app
-server = "netpwn.server.app:main"
+# or: python -m autoploit.server.app
+server = "autoploit.server.app:main"
 
 [tool.setuptools]
 include-package-data = true
-packages = ["netpwn", "netpwn.server"]
-package-dir = { "netpwn" = ".", "netpwn.server" = "server" }
+packages = ["autoploit", "autoploit.server"]
+package-dir = { "autoploit" = ".", "autoploit.server" = "server" }

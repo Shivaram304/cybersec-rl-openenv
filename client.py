@@ -1,4 +1,4 @@
-"""NetPwn Environment Client."""
+"""AutoPloit Environment Client."""
 from typing import Dict
 
 from openenv.core import EnvClient
@@ -6,35 +6,35 @@ from openenv.core.client_types import StepResult
 from openenv.core.env_server.types import State
 
 try:
-    from .models import NetPwnAction, NetPwnObservation
+    from .models import AutoPloitAction, AutoPloitObservation
 except ImportError:
-    from models import NetPwnAction, NetPwnObservation
+    from models import AutoPloitAction, AutoPloitObservation
 
 
-class NetPwnEnv(EnvClient[NetPwnAction, NetPwnObservation, State]):
+class AutoPloitEnv(EnvClient[AutoPloitAction, AutoPloitObservation, State]):
     """
-    Client for the NetPwn penetration testing environment.
+    Client for the AutoPloit penetration testing environment.
 
     Example (Docker):
-        env = await NetPwnEnv.from_docker_image("netpwn_env:latest")
+        env = await AutoPloitEnv.from_docker_image("autoploit_env:latest")
         result = await env.reset()
-        result = await env.step(NetPwnAction(action_type="scan", target_ip="192.168.1.1"))
+        result = await env.step(AutoPloitAction(action_type="scan", target_ip="192.168.1.1"))
 
     Example (URL):
-        env = NetPwnEnv(base_url="http://localhost:8000")
+        env = AutoPloitEnv(base_url="http://localhost:8000")
         result = env.reset()
     """
 
-    def _step_payload(self, action: NetPwnAction) -> Dict:
+    def _step_payload(self, action: AutoPloitAction) -> Dict:
         return {
             "action_type": action.action_type,
             "target_ip":   action.target_ip,
             "technique":   action.technique,
         }
 
-    def _parse_result(self, payload: Dict) -> StepResult[NetPwnObservation]:
+    def _parse_result(self, payload: Dict) -> StepResult[AutoPloitObservation]:
         obs_data = payload.get("observation", {})
-        observation = NetPwnObservation(
+        observation = AutoPloitObservation(
             known_hosts=obs_data.get("known_hosts", []),
             current_pos=obs_data.get("current_pos", "external"),
             ids_alert=obs_data.get("ids_alert", 0.0),
