@@ -112,8 +112,8 @@ def _heuristic(obs: dict, step: int) -> dict:
 # ── Episode ────────────────────────────────────────────────────────────────────
 async def run_episode(task_id: str) -> float:
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    from autoploit.client import AutoPloitEnv
-    from autoploit.models import AutoPloitAction
+    from client import AutoPloitEnv
+    from models import AutoPloitAction
 
     log_start(task=task_id, model=MODEL_NAME, env="autoploit")
 
