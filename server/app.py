@@ -17,6 +17,13 @@ app = create_app(
     max_concurrent_envs=10,
 )
 
+@app.get("/")
+def read_root():
+    return {
+        "status": "online", 
+        "project": "AutoPloit OpenEnv", 
+        "message": "Environment is ready for evaluation."
+    }
 
 def main():
     import uvicorn
