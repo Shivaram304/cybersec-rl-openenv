@@ -14,6 +14,41 @@ import asyncio, json, os, sys, time, traceback
 from typing import List
 
 from openai import OpenAI
+from pydantic import Field
+from typing import Any, Dict, List
+from openenv.core import EnvClient
+from openenv.core.client_types import StepResult
+from openenv.core.env_server.types import Action, Observation, State
+
+class AutoPloitAction(Action):
+    action_type: str = Field(default="scan")
+    target_ip: str = Field(default="192.168.1.1")
+    technique: str = Field(default="")
+
+class AutoPloitObservation(Observation):
+    known_hosts: List[Dict[str, Any]] = Field(default_factory=list)
+    current_pos: str = Field(default="external")
+    ids_alert: float = Field(default=0.0)
+    flags_captured: int = Field(default=0)
+    action_result: str = Field(default="")
+    step_info: str = Field(default="")
+
+class AutoPloitEnv(EnvClient[AutoPloitAction, AutoPloitObservation, State]):
+    def _step_payload(self, action: AutoPloitAction) -> Dict:
+        return {"action_type": action.action_type, "target_ip": action.target_ip, "technique": action.technique}
+
+    def _parse_result(self, payload: Dict) -> StepResult[AutoPloitObservation]:
+        obs_data = payload.get("observation", {})
+        observation = AutoPloitObservation(
+            known_hosts=obs_data.get("known_hosts", []), current_pos=obs_data.get("current_pos", "external"),
+            ids_alert=obs_data.get("ids_alert", 0.0), flags_captured=obs_data.get("flags_captured", 0),
+            action_result=obs_data.get("action_result", ""), step_info=obs_data.get("step_info", ""),
+            done=payload.get("done", False), reward=payload.get("reward", 0.0), metadata=obs_data.get("metadata", {})
+        )
+        return StepResult(observation=observation, reward=payload.get("reward", 0.0), done=payload.get("done", False))
+
+    def _parse_state(self, payload: Dict) -> State:
+        return State(episode_id=payload.get("episode_id", ""), step_count=payload.get("step_count", 0))
 
 # ── Environment variables ─────────────────────────────────────────────────────
 API_BASE_URL     = os.getenv("API_BASE_URL",  "https://openrouter.ai/api/v1")
@@ -115,9 +150,6 @@ def _heuristic(obs: dict, step: int) -> dict:
 
 # ── Episode ────────────────────────────────────────────────────────────────────
 async def run_episode(task_id: str) -> float:
-    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    from client import AutoPloitEnv
-    from models import AutoPloitAction
 
     log_start(task=task_id, model=MODEL_NAME, env="autoploit")
 
@@ -195,4 +227,10 @@ async def main():
         print(f"[DEBUG] mean_score={sum(scores)/len(scores):.4f}", flush=True)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except Exception as e:
+        print(f"[DEBUG] Fatal global crash: {e}", flush=True)
+        print(f"[START] task=ctf_capture env=autoploit model={MODEL_NAME}", flush=True)
+        print("[END] success=false steps=0 score=0.00 rewards=0.00", flush=True)
+        sys.exit(0)
