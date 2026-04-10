@@ -53,14 +53,14 @@ class AutoPloitEnv(EnvClient[AutoPloitAction, AutoPloitObservation, State]):
 # ── Environment variables ─────────────────────────────────────────────────────
 API_BASE_URL     = os.getenv("API_BASE_URL",  "https://openrouter.ai/api/v1")
 MODEL_NAME       = os.getenv("MODEL_NAME",    "meta-llama/llama-3.3-8b-instruct:free")
-HF_TOKEN         = os.getenv("HF_TOKEN")           # NO default — required for LLM calls
+HF_TOKEN         = os.getenv("API_KEY") or os.getenv("HF_TOKEN", "sk-no-token")
 LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")   # Docker image; if unset → use HF Space
 HF_REPO_ID       = os.getenv("HF_REPO_ID",   "shivarammore89/autoploit")
 ENV_URL          = os.getenv("ENV_URL")            # Direct remote URL (e.g. 'https://shivarammore89-autoploit.hf.space')
 TASK_ID          = os.getenv("TASK_ID",       "ctf_capture")
 MAX_STEPS        = int(os.getenv("MAX_STEPS", "50"))
 
-client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN or "sk-no-token")
+client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
 
 TOTAL_FLAGS = {"network_recon": 0, "vulnerability_exploit": 2, "ctf_capture": 3}
 
