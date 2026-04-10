@@ -31,15 +31,19 @@ TOTAL_FLAGS = {"network_recon": 0, "vulnerability_exploit": 2, "ctf_capture": 3}
 
 # ── [START] / [STEP] / [END] log helpers ─────────────────────────────────────
 def log_start(task: str, model: str, env: str) -> None:
-    print(f"[START] {json.dumps({'task':task,'model':model,'env':env,'timestamp':_ts()})}", flush=True)
+    print(f"[START] task={task} env={env} model={model}", flush=True)
 
 def log_step(step: int, action: dict, reward: float, done: bool, error=None) -> None:
-    print(f"[STEP] {json.dumps({'step':step,'action':action,'reward':reward,'done':done,'error':str(error) if error else None})}", flush=True)
+    d_str = "true" if done else "false"
+    e_str = str(error).replace('\n', ' ') if error else "null"
+    act_str = json.dumps(action, separators=(',', ':')).replace('\n', '')
+    print(f"[STEP] step={step} action={act_str} reward={reward:.2f} done={d_str} error={e_str}", flush=True)
 
 def log_end(success: bool, steps: int, score: float, rewards: List[float]) -> None:
-    print(f"[END] {json.dumps({'success':success,'steps':steps,'score':round(score,4),'total_reward':round(sum(rewards),4),'rewards':[round(r,4) for r in rewards],'timestamp':_ts()})}", flush=True)
-
-def _ts(): return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    s_str = "true" if success else "false"
+    r_str = ",".join(f"{r:.2f}" for r in rewards)
+    if not rewards: r_str = "0.00"
+    print(f"[END] success={s_str} steps={steps} score={score:.2f} rewards={r_str}", flush=True)
 
 # ── Score computation ─────────────────────────────────────────────────────────
 def compute_score(task_id: str, flags: int, ids: float, disc_svc: int, total_svc: int, comp: int, rewards: List[float]) -> float:
