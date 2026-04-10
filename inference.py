@@ -21,6 +21,7 @@ MODEL_NAME       = os.getenv("MODEL_NAME",    "meta-llama/llama-3.3-8b-instruct:
 HF_TOKEN         = os.getenv("HF_TOKEN")           # NO default — required for LLM calls
 LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")   # Docker image; if unset → use HF Space
 HF_REPO_ID       = os.getenv("HF_REPO_ID",   "shivarammore89/netpwn")
+ENV_URL          = os.getenv("ENV_URL")            # Direct remote URL (e.g. 'https://shivarammore89-netpwn.hf.space')
 TASK_ID          = os.getenv("TASK_ID",       "ctf_capture")
 MAX_STEPS        = int(os.getenv("MAX_STEPS", "50"))
 
@@ -116,8 +117,11 @@ async def run_episode(task_id: str) -> float:
 
     log_start(task=task_id, model=MODEL_NAME, env="netpwn")
 
-    # Connect: Docker image (local eval) or HF Space (deployment eval)
-    if LOCAL_IMAGE_NAME:
+    # Connect: ENV_URL (remote), Docker (local eval), or HF Space via docker provider
+    if ENV_URL:
+        env = NetPwnEnv(base_url=ENV_URL)
+        await env.connect()
+    elif LOCAL_IMAGE_NAME:
         env = await NetPwnEnv.from_docker_image(LOCAL_IMAGE_NAME)
     else:
         env = await NetPwnEnv.from_env(HF_REPO_ID)
