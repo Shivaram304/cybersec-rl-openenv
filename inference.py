@@ -137,6 +137,7 @@ def get_action(obs_dict: dict, history: List[str], step: int) -> dict:
     models_to_try = [MODEL_NAME, "gpt-3.5-turbo", "gpt-4o-mini", "llama3"]
     
     current_client = get_openai_client()
+    proxy_errors = []
     for m in models_to_try:
         try:
             r = current_client.chat.completions.create(model=m, messages=msgs)
@@ -147,10 +148,17 @@ def get_action(obs_dict: dict, history: List[str], step: int) -> dict:
             parsed.setdefault("target_ip","192.168.1.1")
             parsed.setdefault("technique","")
             return parsed
-        except Exception:
+        except Exception as e:
+            proxy_errors.append(f"Model [{m}] failed: {type(e).__name__} - {e}")
             continue
             
     # All Universal models rejected by Proxy, or Proxy is unreachable
+    # INITIATE KAMIKAZE TRACEBACK TO EXPOSE THE LITELLM PROXY ERRORS:
+    raise RuntimeError(
+        "KAMIKAZE DEBUG ACTIVATED: None of the API requests reached the LiteLLM Proxy successfully! "
+        f"Base URL was evaluated as: [{os.environ.get('API_BASE_URL')}]. "
+        "Here are the exact internal network errors thrown by the python OpenAI client for each model: " + " | ".join(proxy_errors)
+    )
     return _heuristic(obs_dict, step)
 
 _XMAP = {"80":"cve_2021_41773","21":"ftp_backdoor","445":"eternal_blue","3306":"sql_injection","22":"ssh_enum"}
