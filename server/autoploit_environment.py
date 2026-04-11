@@ -106,6 +106,30 @@ class AutoPloitEnvironment(Environment):
     def state(self) -> State:
         return self._state
 
+    def grade(self) -> float:
+        """Return a task score strictly in (0, 1) exclusive — never 0.0 or 1.0.
+        The validator requires scores in the open interval (0, 1)."""
+        net = self._net
+        task = self.task_id
+        tf = max(1, self._total_flags)
+
+        if task == "network_recon":
+            # Score based on service discovery ratio
+            ratio = net.discovered_services / max(1, net.total_services)
+            raw = ratio * 0.85 + max(0.0, 0.15 * (1.0 - net.ids_level))
+        elif task == "vulnerability_exploit":
+            flags = len(net.captured_flags)
+            comp = len(net.compromised)
+            raw = min(comp * 0.3, 0.4) + (flags / tf) * 0.4 + max(0.0, 0.2 * (1.0 - net.ids_level))
+        else:
+            flags = len(net.captured_flags)
+            step_ratio = self._state.step_count / max(1, self._max_steps)
+            step_bonus = max(0.0, 0.15 * (1.0 - step_ratio))
+            raw = (flags / tf) * 0.60 + max(0.0, 0.25 * (1.0 - net.ids_level)) + step_bonus
+
+        # Clamp strictly to (0.01, 0.99) — never exactly 0.0 or 1.0
+        return round(max(0.01, min(0.99, raw)), 4)
+
     # ── Action dispatcher ────────────────────────────────────────────────────
 
     def _dispatch(self, action: AutoPloitAction):
