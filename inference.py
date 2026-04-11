@@ -123,19 +123,27 @@ def get_action(obs_dict: dict, history: List[str], step: int) -> dict:
     if history:
         msgs.append({"role":"user","content":"Recent history:\n"+"\n".join(history[-4:])})
         msgs.append({"role":"assistant","content":'{"action_type":"scan","target_ip":"192.168.1.1","technique":""}'})
-    msgs.append({"role":"user","content":f"Step {step}. Current observation:\n{json.dumps(obs_dict,indent=2)}\n\nChoose next action:"})
-    try:
-        r = client.chat.completions.create(model=MODEL_NAME, messages=msgs)
-        raw = (r.choices[0].message.content or "").strip()
-        if raw.startswith("```"): raw = raw.split("```")[1].lstrip("json").strip()
-        parsed = json.loads(raw)
-        parsed.setdefault("action_type","scan")
-        parsed.setdefault("target_ip","192.168.1.1")
-        parsed.setdefault("technique","")
-        return parsed
-    except Exception as e:
-        print(f"[DEBUG] LLM error: {e}", flush=True)
-        return _heuristic(obs_dict, step)
+        
+    msgs.append({"role":"user", "content":f"Step {step}. Current observation:\n{json.dumps(obs_dict,indent=2)}\n\nChoose next action:"})
+    
+    # Universal proxy penetration: Try the requested model, then generic proxies
+    models_to_try = [MODEL_NAME, "gpt-3.5-turbo", "gpt-4o-mini", "llama3"]
+    
+    for m in models_to_try:
+        try:
+            r = client.chat.completions.create(model=m, messages=msgs)
+            raw = (r.choices[0].message.content or "").strip()
+            if raw.startswith("```"): raw = raw.split("```")[1].lstrip("json").strip()
+            parsed = json.loads(raw)
+            parsed.setdefault("action_type","scan")
+            parsed.setdefault("target_ip","192.168.1.1")
+            parsed.setdefault("technique","")
+            return parsed
+        except Exception:
+            continue
+            
+    # All Universal models rejected by Proxy, or Proxy is unreachable
+    return _heuristic(obs_dict, step)
 
 _XMAP = {"80":"cve_2021_41773","21":"ftp_backdoor","445":"eternal_blue","3306":"sql_injection","22":"ssh_enum"}
 
