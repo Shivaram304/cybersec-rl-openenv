@@ -57,6 +57,12 @@ ENV_URL          = os.getenv("ENV_URL")
 TASK_ID         = os.getenv("TASK_ID",       "all")
 MAX_STEPS        = int(os.getenv("MAX_STEPS", "50"))
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 _global_client = None
 def get_openai_client():
     global _global_client
